@@ -34,9 +34,8 @@ namespace Scalax_client.CoreTasks
 
                             File.Delete(fPath);
 
-                            proc?.Dispose();
                             proc?.Close();
-                            proc?.Kill();
+                            proc?.Kill(true);
 
                             CheckIfFileIsSent_AsyncInterval__IsValid = false;
                             if (CLTknSrc is not null) CLTknSrc.Cancel();
